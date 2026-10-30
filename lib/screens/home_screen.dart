@@ -5,6 +5,7 @@ import '../widgets/coin_purchase_sheet.dart';
 import '../widgets/safety_dialog.dart';
 import 'video_call_screen.dart';
 import 'wallet_screen.dart';
+import 'leaderboard_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final UserState userState;
@@ -147,6 +148,40 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
                       Row(
                         children: [
+                          // Leaderboard Trophy Pill
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => LeaderboardScreen(userState: state),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF1E2142),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
+                              ),
+                              child: const Row(
+                                children: [
+                                  Text('🏆 ', style: TextStyle(fontSize: 12)),
+                                  Text(
+                                    'Rank',
+                                    style: TextStyle(
+                                      color: Colors.amber,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+
                           // Coins pill: opens Coin Purchase Sheet
                           GestureDetector(
                             onTap: () {

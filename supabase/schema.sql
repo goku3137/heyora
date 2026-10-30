@@ -599,6 +599,97 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- K. High-Performance Leaderboard Aggregation RPC
+-- Supports 'stars' (diamonds received) & 'gifters' (coins spent) across 'daily', 'weekly', 'all_time'
+CREATE OR REPLACE FUNCTION public.get_leaderboard(
+    p_category TEXT DEFAULT 'stars',
+    p_timeframe TEXT DEFAULT 'daily',
+    p_limit INT DEFAULT 50
+)
+RETURNS TABLE (
+    rank INT,
+    user_id UUID,
+    display_name TEXT,
+    avatar_url TEXT,
+    score BIGINT
+) AS $$
+DECLARE
+    v_start_time TIMESTAMPTZ;
+BEGIN
+    IF p_timeframe = 'daily' THEN
+        v_start_time := DATE_TRUNC('day', NOW());
+    ELSIF p_timeframe = 'weekly' THEN
+        v_start_time := DATE_TRUNC('week', NOW());
+    ELSE
+        v_start_time := '1970-01-01'::TIMESTAMPTZ;
+    END IF;
+
+    IF p_category = 'stars' THEN
+        IF p_timeframe = 'all_time' THEN
+            RETURN QUERY
+            SELECT 
+                ROW_NUMBER() OVER (ORDER BY w.diamonds DESC)::INT as rank,
+                p.id as user_id,
+                COALESCE(p.display_name, 'Star_' || SUBSTRING(p.id::text, 1, 6)) as display_name,
+                p.avatar_url,
+                COALESCE(w.diamonds, 0)::BIGINT as score
+            FROM public.wallets w
+            JOIN public.profiles p ON p.id = w.user_id
+            WHERE p.is_banned IS FALSE AND w.diamonds > 0
+            ORDER BY w.diamonds DESC
+            LIMIT p_limit;
+        ELSE
+            RETURN QUERY
+            WITH ranked_stars AS (
+                SELECT 
+                    g.receiver_id as u_id,
+                    SUM(g.diamond_value)::BIGINT as total_score
+                FROM public.gifts g
+                WHERE g.created_at >= v_start_time
+                GROUP BY g.receiver_id
+            )
+            SELECT 
+                ROW_NUMBER() OVER (ORDER BY rs.total_score DESC)::INT as rank,
+                p.id as user_id,
+                COALESCE(p.display_name, 'Star_' || SUBSTRING(p.id::text, 1, 6)) as display_name,
+                p.avatar_url,
+                rs.total_score as score
+            FROM ranked_stars rs
+            JOIN public.profiles p ON p.id = rs.u_id
+            WHERE p.is_banned IS FALSE
+            ORDER BY rs.total_score DESC
+            LIMIT p_limit;
+        END IF;
+    ELSE -- 'gifters'
+        RETURN QUERY
+        WITH ranked_gifters AS (
+            SELECT 
+                g.sender_id as u_id,
+                SUM(g.coin_cost)::BIGINT as total_score
+            FROM public.gifts g
+            WHERE (p_timeframe = 'all_time' OR g.created_at >= v_start_time)
+            GROUP BY g.sender_id
+        )
+        SELECT 
+            ROW_NUMBER() OVER (ORDER BY rg.total_score DESC)::INT as rank,
+            p.id as user_id,
+            COALESCE(p.display_name, 'VIP_' || SUBSTRING(p.id::text, 1, 6)) as display_name,
+            p.avatar_url,
+            rg.total_score as score
+        FROM ranked_gifters rg
+        JOIN public.profiles p ON p.id = rg.u_id
+        WHERE p.is_banned IS FALSE
+        ORDER BY rg.total_score DESC
+        LIMIT p_limit;
+    END IF;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Performance indexes for leaderboard queries
+CREATE INDEX IF NOT EXISTS idx_gifts_receiver_created ON public.gifts(receiver_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_gifts_sender_created ON public.gifts(sender_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_wallets_diamonds ON public.wallets(diamonds DESC);
+
 -- Enable Realtime for match_queue, calls, and wallet tables
 ALTER PUBLICATION supabase_realtime ADD TABLE public.match_queue;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.calls;

@@ -52,6 +52,17 @@ HeyOra is a 1-click random video chat app that combines the instant fun of Omegl
 * **1-Tap Report & Block**: Instantly disconnects call and ensures users never match again.
 * **Categorized Reporting**: Nudity, Harassment, Underage (<18), Spam.
 
+### 🏆 8. Competitive Daily & Weekly Leaderboard
+* **Dynamic Timeframe Toggles**:
+  * **Daily ⚡**: Resets every 24h at 00:00 UTC with live ticking countdown timer (drives high DAU & daily urgency).
+  * **Weekly 🏆**: Resets every Sunday at 00:00 UTC (prestige battle for crowns).
+  * **All-Time 👑**: Permanent Hall of Fame honoring VIP spenders and top creators.
+* **Dual Categories**:
+  * **Top Stars 💎**: Ranked by Diamonds earned from stranger appreciation gifts.
+  * **Top Gifters 🎁**: Ranked by Coins spent (rewards whales with VIP badge recognition).
+* **Olympic 3-Step Podium**: Glowing gold 🥇, silver 🥈, and bronze 🥉 crowns with avatar glow rings.
+* **Your Standing Sticky Bar**: Real-time position tracking with instant 1-tap call to action (*"Go Live"* or *"Get Coins"*).
+
 ---
 
 ## 2. Product Roadmap
