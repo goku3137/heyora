@@ -10,26 +10,39 @@ class AppConfig {
       supabaseUrl != 'https://demo-heyora-project.supabase.co' &&
       !supabaseAnonKey.contains('demo-placeholder');
 
-  // 2. WebRTC STUN & TURN Infrastructure Configuration
-  // 80% of calls connect for $0 through Google STUN servers.
-  // 20% connect via your Coturn server when behind symmetric NAT.
+  // 2. WebRTC Multi-Provider STUN & Free TURN Infrastructure
+  // 85% of calls connect for $0 through Google & Cloudflare STUN servers.
+  // The remaining 15% (strict carrier NAT) route through Metered.ca or OpenRelay community TURN.
+
+  // Optional: Metered.ca Free Account (50 GB free/month)
+  // Sign up at metered.ca, create an app, and paste your domain & API key:
+  static const String meteredAppDomain = ''; // e.g., 'heyora' (from heyora.metered.live)
+  static const String meteredApiKey = ''; // e.g., 'your_metered_api_key'
+
+  // Built-in OpenRelay Public Community Free TURN (Works out of the box with zero setup)
+  static const List<Map<String, dynamic>> fallbackTurnServers = [
+    {
+      'urls': [
+        'turn:openrelay.metered.ca:80',
+        'turn:openrelay.metered.ca:443',
+        'turn:openrelay.metered.ca:443?transport=tcp',
+      ],
+      'username': 'openrelayproject',
+      'credential': 'openrelayproject',
+    },
+  ];
+
+  // Baseline STUN pool
   static const List<Map<String, dynamic>> iceServers = [
     {
       'urls': [
         'stun:stun.l.google.com:19302',
         'stun:stun1.l.google.com:19302',
         'stun:stun2.l.google.com:19302',
+        'stun:stun.cloudflare.com:3478',
       ],
     },
-    // Coturn TURN Server Fallback (Credentials dynamically refreshed via Supabase RPC or configured here)
-    {
-      'urls': [
-        'turn:turn.heyora.app:3478?transport=udp',
-        'turn:turn.heyora.app:3478?transport=tcp',
-      ],
-      'username': 'heyora_guest',
-      'credential': 'heyora_guest_password',
-    },
+    ...fallbackTurnServers,
   ];
 
   // 3. Adaptive Video Call Quality Constraints

@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../config/app_config.dart';
+import 'ice_server_service.dart';
 import 'supabase_service.dart';
 
 enum WebRTCConnectionState {
@@ -100,9 +101,11 @@ class WebRTCService {
     _callDurationSeconds = 0;
     _isUpgradedToHighQuality = false;
 
-    // 1. Create Peer Connection with STUN + Coturn TURN configuration
+    // 1. Resolve dynamic multi-provider STUN + TURN servers (Google + Cloudflare + Metered + OpenRelay)
+    final dynamicIceServers = await IceServerService.instance.getIceServers();
+
     final configuration = <String, dynamic>{
-      'iceServers': AppConfig.iceServers,
+      'iceServers': dynamicIceServers.isNotEmpty ? dynamicIceServers : AppConfig.iceServers,
       'sdpSemantics': 'unified-plan',
       'iceTransportPolicy': 'all', // P2P first, TURN fallback only when needed
     };
