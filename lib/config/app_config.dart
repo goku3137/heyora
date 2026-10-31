@@ -6,6 +6,10 @@ class AppConfig {
   static const String supabaseAnonKey =
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.demo-placeholder-key-replace-with-real-key';
 
+  // Optional: Google OAuth Web Client ID (from Google Cloud Console -> Credentials)
+  // Required when verifying Google ID tokens with Supabase Cloud
+  static const String googleWebClientId = '';
+
   static bool get isSupabaseConfigured =>
       supabaseUrl != 'https://demo-heyora-project.supabase.co' &&
       !supabaseAnonKey.contains('demo-placeholder');

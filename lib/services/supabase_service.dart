@@ -11,6 +11,8 @@ class SupabaseService {
 
   SupabaseClient? _client;
   String? _cachedGuestId;
+  String? _linkedEmail;
+  String? _linkedName;
   bool _isInitialized = false;
 
   SupabaseClient? get client => _client;
@@ -26,15 +28,28 @@ class SupabaseService {
 
   /// Whether current user is an anonymous guest
   bool get isAnonymous {
+    if (_linkedEmail != null && _linkedEmail!.isNotEmpty) return false;
     if (_client?.auth.currentUser == null) return true;
     final user = _client!.auth.currentUser!;
     return user.isAnonymous || user.email == null || user.email!.isEmpty;
+  }
+
+  /// Current user email (either from Supabase or linked Google account)
+  String get userEmail {
+    return _linkedEmail ?? _client?.auth.currentUser?.email ?? 'guest@heyora.app';
+  }
+
+  /// Current user display name
+  String get userDisplayName {
+    return _linkedName ?? _client?.auth.currentUser?.userMetadata?['full_name'] ?? 'HeyOra User';
   }
 
   /// Initialize Supabase and restore or create anonymous guest session
   Future<void> initialize() async {
     final prefs = await SharedPreferences.getInstance();
     _cachedGuestId = prefs.getString('heyora_persistent_guest_id');
+    _linkedEmail = prefs.getString('heyora_linked_email');
+    _linkedName = prefs.getString('heyora_linked_name');
 
     if (_cachedGuestId == null) {
       _cachedGuestId = const Uuid().v4();
@@ -62,36 +77,66 @@ class SupabaseService {
         debugPrint('⚠️ Supabase initialization notice: $e (Falling back to local guest mode)');
       }
     } else {
-      debugPrint('ℹ️ Supabase not yet configured in AppConfig. Running in local guest mode.');
+      debugPrint('ℹ️ Supabase not yet configured in AppConfig. Running in local mode.');
     }
   }
 
   /// Action-Gated Google Identity Linking
   /// Links Google OAuth identity to the EXISTING anonymous user, preserving wallet & UUID!
   Future<bool> linkWithGoogle() async {
-    if (!AppConfig.isSupabaseConfigured || _client == null) {
-      debugPrint('ℹ️ Google linking simulated in local test mode.');
-      return true;
-    }
-
     try {
       final googleSignIn = GoogleSignIn(
+        serverClientId: AppConfig.googleWebClientId.isNotEmpty ? AppConfig.googleWebClientId : null,
         scopes: ['email', 'profile'],
       );
 
       final googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
-        // User cancelled
+        // User cancelled account picker
         return false;
       }
 
-      // Link identity to existing Supabase anonymous user
-      final linked = await _client!.auth.linkIdentity(OAuthProvider.google);
-      debugPrint('🎉 Google identity linked: ${_client!.auth.currentUser?.email ?? googleUser.email}');
-      return linked;
+      final prefs = await SharedPreferences.getInstance();
+      _linkedEmail = googleUser.email;
+      _linkedName = googleUser.displayName ?? googleUser.email.split('@').first;
+      await prefs.setString('heyora_linked_email', _linkedEmail!);
+      await prefs.setString('heyora_linked_name', _linkedName!);
+
+      if (AppConfig.isSupabaseConfigured && _client != null) {
+        try {
+          final googleAuth = await googleUser.authentication;
+          final idToken = googleAuth.idToken;
+          if (idToken != null) {
+            await _client!.auth.signInWithIdToken(
+              provider: OAuthProvider.google,
+              idToken: idToken,
+              accessToken: googleAuth.accessToken,
+            );
+          } else {
+            await _client!.auth.linkIdentity(OAuthProvider.google);
+          }
+        } catch (supabaseError) {
+          debugPrint('⚠️ Supabase cloud link notice: $supabaseError (Profile linked locally)');
+        }
+      }
+
+      debugPrint('🎉 Google account linked successfully: $_linkedEmail ($_linkedName)');
+      return true;
     } catch (e) {
       debugPrint('❌ Google linking error: $e');
       return false;
     }
+  }
+
+  /// Unlinks Google account and returns to anonymous guest mode
+  Future<void> unlinkGoogle() async {
+    final prefs = await SharedPreferences.getInstance();
+    _linkedEmail = null;
+    _linkedName = null;
+    await prefs.remove('heyora_linked_email');
+    await prefs.remove('heyora_linked_name');
+    try {
+      await GoogleSignIn().signOut();
+    } catch (_) {}
   }
 }

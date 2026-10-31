@@ -21,6 +21,8 @@ class UserState extends ChangeNotifier {
   bool get hasAccepted18Plus => ModerationService.instance.hasAccepted18Plus;
   bool get isAnonymous => SupabaseService.instance.isAnonymous;
   String get currentUserId => SupabaseService.instance.currentUserId;
+  String get userEmail => SupabaseService.instance.userEmail;
+  String get userDisplayName => SupabaseService.instance.userDisplayName;
 
   Future<void> accept18Plus() async {
     await ModerationService.instance.accept18Plus();
@@ -68,5 +70,10 @@ class UserState extends ChangeNotifier {
     final result = await SupabaseService.instance.linkWithGoogle();
     notifyListeners();
     return result;
+  }
+
+  Future<void> unlinkGoogle() async {
+    await SupabaseService.instance.unlinkGoogle();
+    notifyListeners();
   }
 }

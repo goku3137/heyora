@@ -186,6 +186,26 @@ class WalletScreen extends StatelessWidget {
                               label: const Text('Link with Google', style: TextStyle(fontWeight: FontWeight.bold)),
                             ),
                           ),
+                        ] else ...[
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  userState.userEmail,
+                                  style: const TextStyle(color: Colors.cyanAccent, fontWeight: FontWeight.bold, fontSize: 13),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  await userState.unlinkGoogle();
+                                },
+                                child: const Text('Disconnect', style: TextStyle(color: Colors.white38, fontSize: 12)),
+                              ),
+                            ],
+                          ),
                         ],
                       ],
                     ),
