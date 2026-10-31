@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 
 class ReportDialog extends StatefulWidget {
   final String strangerId;
@@ -41,19 +42,27 @@ class _ReportDialogState extends State<ReportDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
+
     return AlertDialog(
-      backgroundColor: const Color(0xFF161828),
+      backgroundColor: colors.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: const BorderSide(color: Colors.redAccent, width: 1.2),
+        side: BorderSide(color: Colors.redAccent.withValues(alpha: 0.5), width: 1.2),
       ),
-      title: const Row(
+      title: Row(
         children: [
-          Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 28),
-          SizedBox(width: 10),
-          Text(
-            'Report & Block User',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+          const Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 28),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Report & Block User',
+              style: TextStyle(
+                color: colors.textPrimary,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
           ),
         ],
       ),
@@ -61,9 +70,9 @@ class _ReportDialogState extends State<ReportDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Select reason for reporting. This user will be immediately blocked from matching with you again.',
-            style: TextStyle(color: Colors.white70, fontSize: 13),
+            style: TextStyle(color: colors.textSecondary, fontSize: 13),
           ),
           const SizedBox(height: 12),
           ..._reasons.map((reason) {
@@ -78,17 +87,19 @@ class _ReportDialogState extends State<ReportDialog> {
                 margin: const EdgeInsets.only(bottom: 8),
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 decoration: BoxDecoration(
-                  color: isSelected ? Colors.redAccent.withValues(alpha: 0.25) : Colors.white.withValues(alpha: 0.05),
+                  color: isSelected
+                      ? Colors.redAccent.withValues(alpha: 0.15)
+                      : colors.surfaceCard,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: isSelected ? Colors.redAccent : Colors.white10,
+                    color: isSelected ? Colors.redAccent : colors.divider,
                   ),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-                      color: isSelected ? Colors.redAccent : Colors.white54,
+                      color: isSelected ? Colors.redAccent : colors.textSecondary,
                       size: 18,
                     ),
                     const SizedBox(width: 10),
@@ -96,7 +107,7 @@ class _ReportDialogState extends State<ReportDialog> {
                       child: Text(
                         reason,
                         style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.white70,
+                          color: isSelected ? colors.textPrimary : colors.textSecondary,
                           fontSize: 13,
                           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                         ),
@@ -112,7 +123,7 @@ class _ReportDialogState extends State<ReportDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
+          child: Text('Cancel', style: TextStyle(color: colors.textSecondary)),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(

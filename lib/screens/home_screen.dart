@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import '../models/user_state.dart';
 import '../services/admob_service.dart';
+import '../theme/app_colors.dart';
 import '../widgets/coin_purchase_sheet.dart';
 import '../widgets/safety_dialog.dart';
 import 'video_call_screen.dart';
 import 'wallet_screen.dart';
 import 'leaderboard_screen.dart';
+import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final UserState userState;
@@ -114,30 +116,32 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
+
     return AnimatedBuilder(
       animation: widget.userState,
       builder: (context, _) {
         final state = widget.userState;
 
         return Scaffold(
-          backgroundColor: const Color(0xFF090A14),
+          backgroundColor: colors.background,
           body: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Column(
                 children: [
-                  // 1. Top Header (Logo + Coins + Diamonds)
+                  // 1. Top Header (Logo + Rank + Coins + Diamonds)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       // App Brand
-                      const Row(
+                      Row(
                         children: [
-                          Text('⚡ ', style: TextStyle(fontSize: 22)),
+                          const Text('⚡ ', style: TextStyle(fontSize: 22)),
                           Text(
                             'HeyOra',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: colors.textPrimary,
                               fontSize: 24,
                               fontWeight: FontWeight.w900,
                               letterSpacing: 0.5,
@@ -159,28 +163,28 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                               );
                             },
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF1E2142),
+                                color: colors.surface,
                                 borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
+                                border: Border.all(color: colors.divider),
                               ),
-                              child: const Row(
+                              child: Row(
                                 children: [
-                                  Text('🏆 ', style: TextStyle(fontSize: 12)),
+                                  const Text('🏆 ', style: TextStyle(fontSize: 11)),
                                   Text(
                                     'Rank',
                                     style: TextStyle(
-                                      color: Colors.amber,
+                                      color: colors.textPrimary,
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 12,
+                                      fontSize: 11,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
                           ),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: 5),
 
                           // Coins pill: opens Coin Purchase Sheet
                           GestureDetector(
@@ -188,32 +192,32 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                               CoinPurchaseSheet.show(context, userState: state);
                             },
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF1E2142),
+                                color: colors.surface,
                                 borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: Colors.amberAccent.withValues(alpha: 0.4)),
+                                border: Border.all(color: colors.premiumGold.withValues(alpha: 0.4)),
                               ),
                               child: Row(
                                 children: [
-                                  const Text('🪙 ', style: TextStyle(fontSize: 13)),
+                                  const Text('🪙 ', style: TextStyle(fontSize: 12)),
                                   Text(
                                     '${state.coins}',
-                                    style: const TextStyle(
-                                      color: Colors.amberAccent,
+                                    style: TextStyle(
+                                      color: colors.premiumGold,
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 13,
+                                      fontSize: 12,
                                     ),
                                   ),
-                                  const SizedBox(width: 4),
-                                  const Icon(Icons.add_circle, color: Colors.amberAccent, size: 16),
+                                  const SizedBox(width: 3),
+                                  Icon(Icons.add_circle, color: colors.premiumGold, size: 14),
                                 ],
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 5),
 
-                          // Popularity Diamonds Pill (Cashout disabled)
+                          // Popularity Diamonds Pill
                           GestureDetector(
                             onTap: () {
                               Navigator.push(
@@ -224,24 +228,50 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                               );
                             },
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF1E2142),
+                                color: colors.surface,
                                 borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: Colors.cyanAccent.withValues(alpha: 0.4)),
+                                border: Border.all(color: colors.secondaryAccent.withValues(alpha: 0.35)),
                               ),
                               child: Row(
                                 children: [
-                                  const Text('💎 ', style: TextStyle(fontSize: 13)),
+                                  const Text('💎 ', style: TextStyle(fontSize: 12)),
                                   Text(
                                     '${state.diamonds}',
-                                    style: const TextStyle(
-                                      color: Colors.cyanAccent,
+                                    style: TextStyle(
+                                      color: colors.secondaryAccent,
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 13,
+                                      fontSize: 12,
                                     ),
                                   ),
                                 ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+
+                          // Settings Icon
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SettingsScreen(userState: state),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(7),
+                              decoration: BoxDecoration(
+                                color: colors.surface,
+                                shape: BoxShape.circle,
+                                border: Border.all(color: colors.divider),
+                              ),
+                              child: Icon(
+                                Icons.settings_outlined,
+                                color: colors.textPrimary,
+                                size: 18,
                               ),
                             ),
                           ),
@@ -252,7 +282,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
                   const Spacer(flex: 1),
 
-                  // 2. Central Radar / Pulsing 1-Click Match Button
+                  // 2. Central Radar / Pulsing 1-Click Match Button (Solar Coral - Flat & High-Converting)
                   Column(
                     children: [
                       ScaleTransition(
@@ -264,26 +294,22 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             height: 190,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF00F0FF), Color(0xFF9E00FF), Color(0xFFFF007A)],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
+                              color: colors.primaryCTA.withValues(alpha: 0.16),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF00F0FF).withValues(alpha: 0.4),
-                                  blurRadius: 35,
+                                  color: colors.primaryCTA.withValues(alpha: 0.22),
+                                  blurRadius: 36,
                                   spreadRadius: 8,
                                 ),
                               ],
                             ),
                             child: Center(
                               child: Container(
-                                width: 160,
-                                height: 160,
-                                decoration: const BoxDecoration(
+                                width: 156,
+                                height: 156,
+                                decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: Color(0xFF0C0E1E),
+                                  color: colors.primaryCTA,
                                 ),
                                 child: const Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -291,7 +317,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                     Icon(
                                       Icons.videocam_rounded,
                                       color: Colors.white,
-                                      size: 54,
+                                      size: 52,
                                     ),
                                     SizedBox(height: 6),
                                     Text(
@@ -299,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.w900,
-                                        fontSize: 15,
+                                        fontSize: 14,
                                         letterSpacing: 0.8,
                                       ),
                                     ),
@@ -311,31 +337,31 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         ),
                       ),
                       const SizedBox(height: 28),
-                      const Text(
+                      Text(
                         '1-Click Instant Video Match',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: colors.textPrimary,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 6),
-                      const Text(
+                      Text(
                         'Meet verified strangers worldwide with zero friction',
-                        style: TextStyle(color: Colors.white60, fontSize: 13),
+                        style: TextStyle(color: colors.textSecondary, fontSize: 13),
                       ),
                     ],
                   ),
 
                   const Spacer(flex: 1),
 
-                  // 3. Match Preference Selector
+                  // 3. Match Preference Selector (Clean & Minimal)
                   Container(
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF14162B),
+                      color: colors.surfaceCard,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.white10),
+                      border: Border.all(color: colors.divider),
                     ),
                     child: Row(
                       children: [
@@ -346,15 +372,24 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
                                 color: _matchFilter == 'random'
-                                    ? Colors.cyanAccent
+                                    ? colors.surface
                                     : Colors.transparent,
                                 borderRadius: BorderRadius.circular(16),
+                                boxShadow: _matchFilter == 'random'
+                                    ? [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(alpha: colors.isDark ? 0.2 : 0.06),
+                                          blurRadius: 6,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ]
+                                    : null,
                               ),
                               alignment: Alignment.center,
                               child: Text(
                                 '🎲 Random (Free)',
                                 style: TextStyle(
-                                  color: _matchFilter == 'random' ? Colors.black : Colors.white70,
+                                  color: _matchFilter == 'random' ? colors.textPrimary : colors.textSecondary,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 13,
                                 ),
@@ -369,7 +404,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
                                 color: _matchFilter == 'female'
-                                    ? const Color(0xFFFF2A85)
+                                    ? colors.primaryCTA
                                     : Colors.transparent,
                                 borderRadius: BorderRadius.circular(16),
                               ),
@@ -377,7 +412,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                               child: Text(
                                 '👩 Girls Only (🪙 10)',
                                 style: TextStyle(
-                                  color: _matchFilter == 'female' ? Colors.white : Colors.white70,
+                                  color: _matchFilter == 'female' ? Colors.white : colors.textSecondary,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 13,
                                 ),
@@ -398,19 +433,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            const Color(0xFF8A2BE2).withValues(alpha: 0.35),
-                            const Color(0xFF00E5FF).withValues(alpha: 0.15),
-                          ],
-                        ),
+                        color: colors.surface,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.cyanAccent.withValues(alpha: 0.3)),
+                        border: Border.all(color: colors.divider),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
-                          Icon(Icons.ondemand_video_rounded, color: Colors.cyanAccent, size: 24),
-                          SizedBox(width: 12),
+                          Icon(Icons.ondemand_video_rounded, color: colors.premiumGold, size: 24),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -418,19 +448,19 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                 Text(
                                   'Get +15 Free Coins',
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: colors.textPrimary,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 14,
                                   ),
                                 ),
                                 Text(
                                   'Watch a quick 30s ad to unlock filters and gifts',
-                                  style: TextStyle(color: Colors.white60, fontSize: 11),
+                                  style: TextStyle(color: colors.textSecondary, fontSize: 11),
                                 ),
                               ],
                             ),
                           ),
-                          Icon(Icons.arrow_forward_ios_rounded, color: Colors.white54, size: 14),
+                          Icon(Icons.arrow_forward_ios_rounded, color: colors.textSecondary, size: 14),
                         ],
                       ),
                     ),
@@ -438,20 +468,25 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
                   const SizedBox(height: 14),
 
-                  // 5. Safety & Community Guidelines Link
+                  // 5. Safety & Community Guidelines Link (Opens Settings & Legal Policies)
                   GestureDetector(
                     onTap: () {
-                      SafetyDialog.show(context, () {});
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SettingsScreen(userState: state),
+                        ),
+                      );
                     },
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.shield_outlined, color: Colors.white38, size: 16),
-                        SizedBox(width: 6),
+                        Icon(Icons.shield_outlined, color: colors.textSecondary, size: 16),
+                        const SizedBox(width: 6),
                         Text(
                           '18+ Adult Community Guidelines & Privacy',
                           style: TextStyle(
-                            color: Colors.white38,
+                            color: colors.textSecondary,
                             fontSize: 11,
                             decoration: TextDecoration.underline,
                           ),

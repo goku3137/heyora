@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/leaderboard_entry.dart';
 import '../models/user_state.dart';
 import '../services/leaderboard_service.dart';
+import '../theme/app_colors.dart';
 import '../widgets/coin_purchase_sheet.dart';
 
 class LeaderboardScreen extends StatefulWidget {
@@ -95,6 +96,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
     final isStars = _selectedCategory == LeaderboardCategory.stars;
     final unitIcon = isStars ? '💎' : '🪙';
     final unitLabel = isStars ? 'Diamonds' : 'Coins';
@@ -106,23 +108,23 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
     List<LeaderboardEntry> runnersUp = _entries.length > 3 ? _entries.sublist(3) : [];
 
     return Scaffold(
-      backgroundColor: const Color(0xFF090A14),
+      backgroundColor: colors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF090A14),
+        backgroundColor: colors.background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new_rounded, color: colors.textPrimary, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,
-        title: const Row(
+        title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('🏆 ', style: TextStyle(fontSize: 20)),
+            const Text('🏆 ', style: TextStyle(fontSize: 20)),
             Text(
               'Leaderboard',
               style: TextStyle(
-                color: Colors.white,
+                color: colors.textPrimary,
                 fontWeight: FontWeight.w900,
                 fontSize: 20,
                 letterSpacing: 0.5,
@@ -132,7 +134,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.info_outline_rounded, color: Colors.white60, size: 22),
+            icon: Icon(Icons.info_outline_rounded, color: colors.textSecondary, size: 22),
             onPressed: () => _showRulesDialog(context),
           ),
         ],
@@ -146,18 +148,19 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
               child: Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF14172B),
+                  color: colors.surfaceCard,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                  border: Border.all(color: colors.divider),
                 ),
                 child: Row(
                   children: [
                     Expanded(
                       child: _buildCategoryTab(
+                        context: context,
                         title: 'Top Stars 💎',
                         subtitle: 'Earned Fans',
                         isSelected: _selectedCategory == LeaderboardCategory.stars,
-                        activeGradient: const [Color(0xFF00F0FF), Color(0xFF7000FF)],
+                        activeGradient: [colors.primaryCTA, colors.secondaryAccent],
                         onTap: () {
                           if (_selectedCategory != LeaderboardCategory.stars) {
                             setState(() => _selectedCategory = LeaderboardCategory.stars);
@@ -168,10 +171,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                     ),
                     Expanded(
                       child: _buildCategoryTab(
+                        context: context,
                         title: 'Top Gifters 🎁',
                         subtitle: 'Generous VIPs',
                         isSelected: _selectedCategory == LeaderboardCategory.gifters,
-                        activeGradient: const [Color(0xFFFFB300), Color(0xFFFF007A)],
+                        activeGradient: [colors.premiumGold, colors.primaryCTA],
                         onTap: () {
                           if (_selectedCategory != LeaderboardCategory.gifters) {
                             setState(() => _selectedCategory = LeaderboardCategory.gifters);
@@ -190,11 +194,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
               child: Row(
                 children: [
-                  _buildTimeframePill('Daily ⚡', LeaderboardTimeframe.daily),
+                  _buildTimeframePill(context, 'Daily ⚡', LeaderboardTimeframe.daily),
                   const SizedBox(width: 8),
-                  _buildTimeframePill('Weekly 🏆', LeaderboardTimeframe.weekly),
+                  _buildTimeframePill(context, 'Weekly 🏆', LeaderboardTimeframe.weekly),
                   const SizedBox(width: 8),
-                  _buildTimeframePill('All-Time 👑', LeaderboardTimeframe.allTime),
+                  _buildTimeframePill(context, 'All-Time 👑', LeaderboardTimeframe.allTime),
                 ],
               ),
             ),
@@ -205,18 +209,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      const Color(0xFF1B1E38),
-                      const Color(0xFF1B1E38).withValues(alpha: 0.6),
-                    ],
-                  ),
+                  color: colors.surfaceCard,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: _selectedTimeframe == LeaderboardTimeframe.daily
-                        ? Colors.cyanAccent.withValues(alpha: 0.3)
-                        : Colors.amberAccent.withValues(alpha: 0.3),
-                  ),
+                  border: Border.all(color: colors.divider),
                 ),
                 child: Row(
                   children: [
@@ -224,23 +219,19 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                       _selectedTimeframe == LeaderboardTimeframe.allTime
                           ? Icons.military_tech_rounded
                           : Icons.timer_outlined,
-                      color: _selectedTimeframe == LeaderboardTimeframe.daily
-                          ? Colors.cyanAccent
-                          : Colors.amberAccent,
+                      color: colors.premiumGold,
                       size: 18,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       _selectedTimeframe == LeaderboardTimeframe.allTime ? 'Rankings:' : 'Next Reset:',
-                      style: const TextStyle(color: Colors.white70, fontSize: 12),
+                      style: TextStyle(color: colors.textSecondary, fontSize: 12),
                     ),
                     const Spacer(),
                     Text(
                       _formatDuration(_timeUntilReset),
                       style: TextStyle(
-                        color: _selectedTimeframe == LeaderboardTimeframe.daily
-                            ? Colors.cyanAccent
-                            : Colors.amberAccent,
+                        color: colors.premiumGold,
                         fontWeight: FontWeight.bold,
                         fontSize: 13,
                         fontFeatures: const [FontFeature.tabularFigures()],
@@ -254,37 +245,37 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
             // 4. Main Scrollable List (Podium + Rank Cards)
             Expanded(
               child: _isLoading
-                  ? const Center(
-                      child: CircularProgressIndicator(color: Color(0xFF00F0FF)),
+                  ? Center(
+                      child: CircularProgressIndicator(color: colors.primaryCTA),
                     )
                   : RefreshIndicator(
-                      color: const Color(0xFF00F0FF),
-                      backgroundColor: const Color(0xFF14172B),
+                      color: colors.primaryCTA,
+                      backgroundColor: colors.surface,
                       onRefresh: _fetchData,
                       child: ListView(
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                         children: [
                           // 🥇 Podium Section (Top 3)
                           if (first != null) ...[
-                            _buildPodium(first, second, third, unitIcon),
+                            _buildPodium(context, first, second, third, unitIcon),
                             const SizedBox(height: 24),
                           ],
 
                           // 🏅 Section Header for Ranks 4+
                           if (runnersUp.isNotEmpty) ...[
-                            const Row(
+                            Row(
                               children: [
                                 Text(
                                   'Contenders (4 - 50)',
                                   style: TextStyle(
-                                    color: Colors.white60,
+                                    color: colors.textSecondary,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                     letterSpacing: 0.5,
                                   ),
                                 ),
-                                SizedBox(width: 8),
-                                Expanded(child: Divider(color: Colors.white12)),
+                                const SizedBox(width: 8),
+                                Expanded(child: Divider(color: colors.divider)),
                               ],
                             ),
                             const SizedBox(height: 12),
@@ -292,7 +283,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
 
                           // List of rank 4-50
                           ...runnersUp.map(
-                            (entry) => _buildRankTile(entry, unitIcon),
+                            (entry) => _buildRankTile(context, entry, unitIcon),
                           ),
 
                           const SizedBox(height: 90), // Bottom sheet spacing
@@ -305,19 +296,21 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
       ),
 
       // 5. Sticky Bottom Bar ("Your Rank & Status")
-      bottomSheet: _buildUserStandingBar(isStars, unitIcon, unitLabel),
+      bottomSheet: _buildUserStandingBar(context, isStars, unitIcon, unitLabel),
     );
   }
 
   // --- Sub-Widgets ---
 
   Widget _buildCategoryTab({
+    required BuildContext context,
     required String title,
     required String subtitle,
     required bool isSelected,
     required List<Color> activeGradient,
     required VoidCallback onTap,
   }) {
+    final colors = AppColors.of(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -332,7 +325,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
             Text(
               title,
               style: TextStyle(
-                color: isSelected ? Colors.white : Colors.white60,
+                color: isSelected ? Colors.white : colors.textSecondary,
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
               ),
@@ -341,7 +334,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
             Text(
               subtitle,
               style: TextStyle(
-                color: isSelected ? Colors.white.withValues(alpha: 0.85) : Colors.white38,
+                color: isSelected ? Colors.white.withValues(alpha: 0.85) : colors.textSecondary.withValues(alpha: 0.7),
                 fontSize: 11,
               ),
             ),
@@ -351,7 +344,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
     );
   }
 
-  Widget _buildTimeframePill(String label, LeaderboardTimeframe timeframe) {
+  Widget _buildTimeframePill(BuildContext context, String label, LeaderboardTimeframe timeframe) {
+    final colors = AppColors.of(context);
     final isSelected = _selectedTimeframe == timeframe;
     return Expanded(
       child: GestureDetector(
@@ -365,17 +359,17 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF262C52) : const Color(0xFF14172B),
+            color: isSelected ? colors.primaryCTA.withValues(alpha: 0.12) : colors.surfaceCard,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: isSelected ? Colors.cyanAccent.withValues(alpha: 0.8) : Colors.white10,
+              color: isSelected ? colors.primaryCTA : colors.divider,
             ),
           ),
           alignment: Alignment.center,
           child: Text(
             label,
             style: TextStyle(
-              color: isSelected ? Colors.cyanAccent : Colors.white60,
+              color: isSelected ? colors.primaryCTA : colors.textSecondary,
               fontSize: 12,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
@@ -386,11 +380,13 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
   }
 
   Widget _buildPodium(
+    BuildContext context,
     LeaderboardEntry first,
     LeaderboardEntry? second,
     LeaderboardEntry? third,
     String unitIcon,
   ) {
+    final colors = AppColors.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -399,9 +395,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
         if (second != null)
           Expanded(
             child: _buildPodiumColumn(
+              context: context,
               entry: second,
               rank: 2,
-              crownColor: const Color(0xFFC0C0C0),
+              crownColor: const Color(0xFF9E9E9E),
               podiumHeight: 120,
               unitIcon: unitIcon,
               gradient: const [Color(0xFF8A95A5), Color(0xFF4B5563)],
@@ -415,13 +412,14 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
         // #1 Gold (Center, Taller, Glowing)
         Expanded(
           child: _buildPodiumColumn(
+            context: context,
             entry: first,
             rank: 1,
-            crownColor: const Color(0xFFFFD700),
+            crownColor: colors.premiumGold,
             podiumHeight: 155,
             unitIcon: unitIcon,
             isCenterFirst: true,
-            gradient: const [Color(0xFFFFB300), Color(0xFFFF6F00)],
+            gradient: [colors.premiumGold, colors.primaryCTA],
           ),
         ),
 
@@ -431,6 +429,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
         if (third != null)
           Expanded(
             child: _buildPodiumColumn(
+              context: context,
               entry: third,
               rank: 3,
               crownColor: const Color(0xFFCD7F32),
@@ -446,6 +445,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
   }
 
   Widget _buildPodiumColumn({
+    required BuildContext context,
     required LeaderboardEntry entry,
     required int rank,
     required Color crownColor,
@@ -454,6 +454,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
     required List<Color> gradient,
     bool isCenterFirst = false,
   }) {
+    final colors = AppColors.of(context);
     final avatarSize = isCenterFirst ? 68.0 : 54.0;
 
     return Column(
@@ -480,13 +481,13 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                 spreadRadius: 1,
               ),
             ],
-            color: const Color(0xFF1E2142),
+            color: colors.surfaceCard,
           ),
           alignment: Alignment.center,
           child: Text(
             entry.displayName.isNotEmpty ? entry.displayName[0].toUpperCase() : '?',
             style: TextStyle(
-              color: Colors.white,
+              color: colors.textPrimary,
               fontWeight: FontWeight.bold,
               fontSize: isCenterFirst ? 24 : 18,
             ),
@@ -500,7 +501,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
-            color: Colors.white,
+            color: colors.textPrimary,
             fontWeight: isCenterFirst ? FontWeight.bold : FontWeight.w600,
             fontSize: isCenterFirst ? 13 : 11,
           ),
@@ -511,7 +512,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
           margin: const EdgeInsets.only(top: 4, bottom: 6),
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
-            color: const Color(0xFF14172B),
+            color: colors.surface,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: crownColor.withValues(alpha: 0.5)),
           ),
@@ -567,17 +568,20 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
     );
   }
 
-  Widget _buildRankTile(LeaderboardEntry entry, String unitIcon) {
+  Widget _buildRankTile(BuildContext context, LeaderboardEntry entry, String unitIcon) {
+    final colors = AppColors.of(context);
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: entry.isCurrentUser ? const Color(0xFF262C52) : const Color(0xFF14172B),
+        color: entry.isCurrentUser
+            ? colors.primaryCTA.withValues(alpha: 0.12)
+            : colors.surfaceCard,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: entry.isCurrentUser
-              ? Colors.cyanAccent.withValues(alpha: 0.6)
-              : Colors.white.withValues(alpha: 0.05),
+              ? colors.primaryCTA.withValues(alpha: 0.6)
+              : colors.divider,
         ),
       ),
       child: Row(
@@ -587,14 +591,14 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
             width: 34,
             height: 34,
             decoration: BoxDecoration(
-              color: const Color(0xFF1E2142),
+              color: colors.surface,
               borderRadius: BorderRadius.circular(8),
             ),
             alignment: Alignment.center,
             child: Text(
               '#${entry.rank}',
               style: TextStyle(
-                color: entry.rank <= 10 ? Colors.cyanAccent : Colors.white60,
+                color: entry.rank <= 10 ? colors.primaryCTA : colors.textSecondary,
                 fontWeight: FontWeight.bold,
                 fontSize: 12,
               ),
@@ -605,10 +609,14 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
           // Mini Avatar
           CircleAvatar(
             radius: 18,
-            backgroundColor: const Color(0xFF2E335A),
+            backgroundColor: colors.surface,
             child: Text(
               entry.displayName.isNotEmpty ? entry.displayName[0].toUpperCase() : '?',
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+              style: TextStyle(
+                color: colors.textPrimary,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              ),
             ),
           ),
           const SizedBox(width: 12),
@@ -625,8 +633,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                         entry.displayName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: colors.textPrimary,
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
                         ),
@@ -637,13 +645,13 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: Colors.cyanAccent.withValues(alpha: 0.2),
+                          color: colors.primaryCTA.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: const Text(
+                        child: Text(
                           'YOU',
                           style: TextStyle(
-                            color: Colors.cyanAccent,
+                            color: colors.primaryCTA,
                             fontSize: 9,
                             fontWeight: FontWeight.bold,
                           ),
@@ -654,7 +662,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                 ),
                 Text(
                   entry.rank <= 10 ? 'VIP Star' : 'Member',
-                  style: const TextStyle(color: Colors.white38, fontSize: 11),
+                  style: TextStyle(color: colors.textSecondary, fontSize: 11),
                 ),
               ],
             ),
@@ -667,8 +675,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
               const SizedBox(width: 4),
               Text(
                 _formatScore(entry.score),
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: colors.textPrimary,
                   fontWeight: FontWeight.bold,
                   fontSize: 13,
                 ),
@@ -680,43 +688,44 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
     );
   }
 
-  Widget _buildUserStandingBar(bool isStars, String unitIcon, String unitLabel) {
+  Widget _buildUserStandingBar(BuildContext context, bool isStars, String unitIcon, String unitLabel) {
+    final colors = AppColors.of(context);
     final userScore = isStars ? widget.userState.diamonds : widget.userState.coins;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFF14172B),
+        color: colors.surface,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.6),
+            color: Colors.black.withValues(alpha: colors.isDark ? 0.6 : 0.08),
             blurRadius: 15,
             offset: const Offset(0, -4),
           ),
         ],
         border: Border(
-          top: BorderSide(color: Colors.cyanAccent.withValues(alpha: 0.2)),
+          top: BorderSide(color: colors.divider),
         ),
       ),
       child: Row(
         children: [
           CircleAvatar(
             radius: 18,
-            backgroundColor: const Color(0xFF00F0FF).withValues(alpha: 0.2),
-            child: const Icon(Icons.person, color: Colors.cyanAccent, size: 20),
+            backgroundColor: colors.primaryCTA.withValues(alpha: 0.15),
+            child: Icon(Icons.person, color: colors.primaryCTA, size: 20),
           ),
           const SizedBox(width: 12),
           Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Your Standing',
-                style: TextStyle(color: Colors.white60, fontSize: 11),
+                style: TextStyle(color: colors.textSecondary, fontSize: 11),
               ),
               Row(
                 children: [
@@ -724,8 +733,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                   const SizedBox(width: 4),
                   Text(
                     _formatScore(userScore),
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: colors.textPrimary,
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
                     ),
@@ -733,7 +742,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
                   const SizedBox(width: 4),
                   Text(
                     unitLabel,
-                    style: const TextStyle(color: Colors.white54, fontSize: 11),
+                    style: TextStyle(color: colors.textSecondary, fontSize: 11),
                   ),
                 ],
               ),
@@ -742,8 +751,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
           const Spacer(),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: isStars ? const Color(0xFF00F0FF) : const Color(0xFFFFB300),
-              foregroundColor: Colors.black,
+              backgroundColor: isStars ? colors.primaryCTA : colors.premiumGold,
+              foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             ),
@@ -767,54 +776,59 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> with SingleTicker
   }
 
   void _showRulesDialog(BuildContext context) {
+    final colors = AppColors.of(context);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF14172B),
+        backgroundColor: colors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: const Row(
+        title: Row(
           children: [
-            Text('🏆 ', style: TextStyle(fontSize: 20)),
+            const Text('🏆 ', style: TextStyle(fontSize: 20)),
             Text(
               'Leaderboard Rules',
-              style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: colors.textPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),
-        content: const Column(
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               '⚡ Daily Leaderboard',
-              style: TextStyle(color: Colors.cyanAccent, fontWeight: FontWeight.bold),
+              style: TextStyle(color: colors.primaryCTA, fontWeight: FontWeight.bold),
             ),
             Text(
               'Resets every night at 00:00 UTC. Top 3 gain the Daily Crown & VIP badges for the next 24 hours.\n',
-              style: TextStyle(color: Colors.white70, fontSize: 12),
+              style: TextStyle(color: colors.textSecondary, fontSize: 12),
             ),
             Text(
               '🏆 Weekly Leaderboard',
-              style: TextStyle(color: Colors.amberAccent, fontWeight: FontWeight.bold),
+              style: TextStyle(color: colors.premiumGold, fontWeight: FontWeight.bold),
             ),
             Text(
               'Resets every Sunday at 00:00 UTC. Top contenders receive permanent prestige status.\n',
-              style: TextStyle(color: Colors.white70, fontSize: 12),
+              style: TextStyle(color: colors.textSecondary, fontSize: 12),
             ),
             Text(
               '💎 Stars vs 🎁 Gifters',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style: TextStyle(color: colors.textPrimary, fontWeight: FontWeight.bold),
             ),
             Text(
               'Stars are ranked by Diamonds earned from stranger gifts in live calls. Gifters are ranked by Coins spent sending gifts.',
-              style: TextStyle(color: Colors.white70, fontSize: 12),
+              style: TextStyle(color: colors.textSecondary, fontSize: 12),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('GOT IT', style: TextStyle(color: Color(0xFF00F0FF))),
+            child: Text('GOT IT', style: TextStyle(color: colors.primaryCTA)),
           ),
         ],
       ),

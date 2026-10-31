@@ -164,4 +164,15 @@ class WalletService {
     await prefs.setInt('heyora_cached_coins', _coins);
     await prefs.setInt('heyora_cached_diamonds', _diamonds);
   }
+
+  /// Reset wallet to default initial state upon account deletion
+  Future<void> resetWallet() async {
+    _coins = 120;
+    _diamonds = 0;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('heyora_cached_coins');
+    await prefs.remove('heyora_cached_diamonds');
+    await _saveToLocalCache();
+    onWalletUpdated?.call();
+  }
 }

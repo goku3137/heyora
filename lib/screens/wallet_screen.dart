@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../models/user_state.dart';
+import '../theme/app_colors.dart';
 import '../widgets/coin_purchase_sheet.dart';
 import '../widgets/google_linking_sheet.dart';
+import 'settings_screen.dart';
 
 class WalletScreen extends StatelessWidget {
   final UserState userState;
@@ -10,62 +12,84 @@ class WalletScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
+
     return AnimatedBuilder(
       animation: userState,
       builder: (context, _) {
         return Scaffold(
-          backgroundColor: const Color(0xFF0C0E1E),
+          backgroundColor: colors.background,
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
-            title: const Text('Wallet & Popularity', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            iconTheme: const IconThemeData(color: Colors.white),
+            title: Text(
+              'Wallet & Status',
+              style: TextStyle(
+                color: colors.textPrimary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            iconTheme: IconThemeData(color: colors.textPrimary),
+            actions: [
+              IconButton(
+                icon: Icon(Icons.settings_outlined, color: colors.textPrimary),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SettingsScreen(userState: userState),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
           body: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               child: Column(
                 children: [
-                  // 1. Diamonds Popularity Card
+                  // 1. Diamonds Popularity Card (Subtle Violet Accent Glow)
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(22),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          const Color(0xFF00E5FF).withValues(alpha: 0.15),
-                          const Color(0xFF9E00FF).withValues(alpha: 0.15),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+                      color: colors.surface,
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.cyanAccent.withValues(alpha: 0.3)),
+                      border: Border.all(color: colors.secondaryAccent.withValues(alpha: 0.25)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: colors.secondaryAccent.withValues(alpha: 0.06),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
                     ),
                     child: Column(
                       children: [
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.cyanAccent.withValues(alpha: 0.1),
+                            color: colors.secondaryAccent.withValues(alpha: 0.12),
                             shape: BoxShape.circle,
                           ),
-                          child: const Text('💎', style: TextStyle(fontSize: 42)),
+                          child: const Text('💎', style: TextStyle(fontSize: 40)),
                         ),
                         const SizedBox(height: 12),
                         Text(
                           '${userState.diamonds} Diamonds',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 30,
+                          style: TextStyle(
+                            color: colors.textPrimary,
+                            fontSize: 28,
                             fontWeight: FontWeight.w900,
+                            letterSpacing: -0.5,
                           ),
                         ),
                         const SizedBox(height: 6),
-                        const Text(
-                          'Accumulated fan appreciation score earned from virtual gifts received during live calls.',
+                        Text(
+                          'Accumulated fan appreciation earned from virtual gifts received during live calls.',
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white70, fontSize: 13),
+                          style: TextStyle(color: colors.textSecondary, fontSize: 13),
                         ),
                       ],
                     ),
@@ -78,9 +102,9 @@ class WalletScreen extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF14162B),
+                      color: colors.surface,
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.white10),
+                      border: Border.all(color: colors.divider),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -94,15 +118,15 @@ class WalletScreen extends StatelessWidget {
                               children: [
                                 Text(
                                   '${userState.coins} Coins',
-                                  style: const TextStyle(
-                                    color: Colors.amberAccent,
+                                  style: TextStyle(
+                                    color: colors.premiumGold,
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                const Text(
-                                  'For gifts & gender filters',
-                                  style: TextStyle(color: Colors.white60, fontSize: 12),
+                                Text(
+                                  'For luxury gifts & filters',
+                                  style: TextStyle(color: colors.textSecondary, fontSize: 12),
                                 ),
                               ],
                             ),
@@ -110,10 +134,11 @@ class WalletScreen extends StatelessWidget {
                         ),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.amberAccent,
-                            foregroundColor: Colors.black,
+                            backgroundColor: colors.premiumGold,
+                            foregroundColor: colors.isDark ? Colors.black : Colors.white,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                            elevation: 0,
                           ),
                           onPressed: () {
                             CoinPurchaseSheet.show(context, userState: userState);
@@ -132,9 +157,9 @@ class WalletScreen extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF14162B),
+                      color: colors.surface,
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.white10),
+                      border: Border.all(color: colors.divider),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,14 +168,14 @@ class WalletScreen extends StatelessWidget {
                           children: [
                             Icon(
                               userState.isAnonymous ? Icons.person_outline : Icons.verified_user_rounded,
-                              color: userState.isAnonymous ? Colors.white60 : Colors.greenAccent,
+                              color: userState.isAnonymous ? colors.textSecondary : Colors.greenAccent,
                               size: 24,
                             ),
                             const SizedBox(width: 10),
                             Text(
                               userState.isAnonymous ? 'Guest Mode' : 'Verified Google Account',
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: colors.textPrimary,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               ),
@@ -160,9 +185,9 @@ class WalletScreen extends StatelessWidget {
                         const SizedBox(height: 6),
                         Text(
                           userState.isAnonymous
-                              ? 'You are chatting as an anonymous guest. Link your Google account to sync your coins and diamond status across devices.'
-                              : 'Your wallet and diamonds are backed up securely to your Google account.',
-                          style: const TextStyle(color: Colors.white60, fontSize: 12),
+                              ? 'You are chatting as an anonymous guest. Link your Google account to sync your coins and diamond status.'
+                              : 'Your wallet, coins, and popularity are backed up securely.',
+                          style: TextStyle(color: colors.textSecondary, fontSize: 12),
                         ),
                         if (userState.isAnonymous) ...[
                           const SizedBox(height: 14),
@@ -170,8 +195,8 @@ class WalletScreen extends StatelessWidget {
                             width: double.infinity,
                             child: OutlinedButton.icon(
                               style: OutlinedButton.styleFrom(
-                                side: const BorderSide(color: Colors.cyanAccent),
-                                foregroundColor: Colors.cyanAccent,
+                                side: BorderSide(color: colors.primaryCTA),
+                                foregroundColor: colors.primaryCTA,
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                               ),
                               onPressed: () {
@@ -194,7 +219,7 @@ class WalletScreen extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   userState.userEmail,
-                                  style: const TextStyle(color: Colors.cyanAccent, fontWeight: FontWeight.bold, fontSize: 13),
+                                  style: TextStyle(color: colors.primaryCTA, fontWeight: FontWeight.bold, fontSize: 13),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
@@ -202,7 +227,7 @@ class WalletScreen extends StatelessWidget {
                                 onPressed: () async {
                                   await userState.unlinkGoogle();
                                 },
-                                child: const Text('Disconnect', style: TextStyle(color: Colors.white38, fontSize: 12)),
+                                child: Text('Disconnect', style: TextStyle(color: colors.textSecondary, fontSize: 12)),
                               ),
                             ],
                           ),
@@ -211,24 +236,77 @@ class WalletScreen extends StatelessWidget {
                     ),
                   ),
 
+                  const SizedBox(height: 16),
+
+                  // 4. App Theme Appearance Selector (Dual Theme + Cinema Mode)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: colors.surface,
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: colors.divider),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.palette_outlined, color: colors.primaryCTA, size: 22),
+                            const SizedBox(width: 10),
+                            Text(
+                              'App Appearance',
+                              style: TextStyle(
+                                color: colors.textPrimary,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Video calls always run in Cinema Mode to preserve natural camera lighting.',
+                          style: TextStyle(color: colors.textSecondary, fontSize: 12),
+                        ),
+                        const SizedBox(height: 14),
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: colors.background,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: colors.divider),
+                          ),
+                          child: Row(
+                            children: [
+                              _buildThemeOption(context, 'System', ThemeMode.system, Icons.brightness_auto, userState, colors),
+                              _buildThemeOption(context, 'Dark', ThemeMode.dark, Icons.dark_mode_outlined, userState, colors),
+                              _buildThemeOption(context, 'Light', ThemeMode.light, Icons.light_mode_outlined, userState, colors),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
                   const SizedBox(height: 20),
 
-                  // 4. Compliance Notice (Cashouts Paused)
+                  // 5. Compliance Notice (Cashouts Paused)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.04),
+                      color: colors.surfaceCard,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.white10),
+                      border: Border.all(color: colors.divider),
                     ),
-                    child: const Row(
+                    child: Row(
                       children: [
-                        Icon(Icons.info_outline, color: Colors.white54, size: 20),
-                        SizedBox(width: 12),
+                        Icon(Icons.info_outline, color: colors.textSecondary, size: 20),
+                        const SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             'Cashout is paused for initial Google Play release. Diamonds represent in-app popularity score and are non-withdrawable.',
-                            style: TextStyle(color: Colors.white60, fontSize: 11),
+                            style: TextStyle(color: colors.textSecondary, fontSize: 11),
                           ),
                         ),
                       ],
@@ -240,6 +318,59 @@ class WalletScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildThemeOption(
+    BuildContext context,
+    String label,
+    ThemeMode mode,
+    IconData icon,
+    UserState userState,
+    AppColorScheme colors,
+  ) {
+    final isSelected = userState.themeMode == mode;
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => userState.setThemeMode(mode),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: isSelected ? colors.surface : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: colors.isDark ? 0.3 : 0.08),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 16,
+                color: isSelected ? colors.primaryCTA : colors.textSecondary,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  color: isSelected ? colors.textPrimary : colors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

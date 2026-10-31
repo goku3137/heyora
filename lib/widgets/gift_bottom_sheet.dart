@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/gift.dart';
 import '../models/user_state.dart';
 import '../services/admob_service.dart';
+import '../theme/app_colors.dart';
 import 'coin_purchase_sheet.dart';
 import 'google_linking_sheet.dart';
 
@@ -36,7 +37,6 @@ class GiftBottomSheet extends StatelessWidget {
   }
 
   void _handleGiftTap(BuildContext context, Gift gift) {
-    // Action-gating: If guest, prompt to link Google account to protect roses/gifts
     if (userState.isAnonymous) {
       GoogleLinkingSheet.show(
         context,
@@ -83,16 +83,22 @@ class GiftBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
+
     return AnimatedBuilder(
       animation: userState,
       builder: (context, _) {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          decoration: const BoxDecoration(
-            color: Color(0xFF14162B),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
             boxShadow: [
-              BoxShadow(color: Colors.black54, blurRadius: 20, spreadRadius: 5),
+              BoxShadow(
+                color: Colors.black.withValues(alpha: colors.isDark ? 0.6 : 0.15),
+                blurRadius: 20,
+                spreadRadius: 5,
+              ),
             ],
           ),
           child: SafeArea(
@@ -106,7 +112,7 @@ class GiftBottomSheet extends StatelessWidget {
                   height: 4,
                   margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
-                    color: Colors.white24,
+                    color: colors.divider,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -114,10 +120,10 @@ class GiftBottomSheet extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Send Virtual Gift 🎁',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: colors.textPrimary,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -129,23 +135,25 @@ class GiftBottomSheet extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF262847),
+                          color: colors.surfaceCard,
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.amberAccent.withValues(alpha: 0.5)),
+                          border: Border.all(
+                            color: colors.premiumGold.withValues(alpha: 0.5),
+                          ),
                         ),
                         child: Row(
                           children: [
                             const Text('🪙 ', style: TextStyle(fontSize: 14)),
                             Text(
                               '${userState.coins}',
-                              style: const TextStyle(
-                                color: Colors.amberAccent,
+                              style: TextStyle(
+                                color: colors.premiumGold,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
                               ),
                             ),
                             const SizedBox(width: 4),
-                            const Icon(Icons.add_circle, color: Colors.amberAccent, size: 16),
+                            Icon(Icons.add_circle, color: colors.premiumGold, size: 16),
                           ],
                         ),
                       ),
@@ -174,13 +182,13 @@ class GiftBottomSheet extends StatelessWidget {
                       child: Container(
                         decoration: BoxDecoration(
                           color: canAfford
-                              ? const Color(0xFF1E213D)
-                              : Colors.white.withValues(alpha: 0.04),
+                              ? colors.surfaceCard
+                              : colors.surfaceCard.withValues(alpha: 0.4),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                             color: canAfford
-                                ? Colors.cyanAccent.withValues(alpha: 0.3)
-                                : Colors.white10,
+                                ? colors.secondaryAccent.withValues(alpha: 0.35)
+                                : colors.divider,
                           ),
                         ),
                         child: Column(
@@ -190,8 +198,8 @@ class GiftBottomSheet extends StatelessWidget {
                             const SizedBox(height: 4),
                             Text(
                               gift.name,
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: canAfford ? colors.textPrimary : colors.textSecondary,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 12,
                               ),
@@ -200,15 +208,13 @@ class GiftBottomSheet extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                               decoration: BoxDecoration(
-                                color: canAfford
-                                    ? Colors.amber.withValues(alpha: 0.2)
-                                    : Colors.white10,
+                                color: colors.premiumGold.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
                                 '🪙 ${gift.coinCost}',
                                 style: TextStyle(
-                                  color: canAfford ? Colors.amberAccent : Colors.white38,
+                                  color: colors.premiumGold,
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -242,9 +248,7 @@ class GiftBottomSheet extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF6C13D1), Color(0xFF9E00FF)],
-                      ),
+                      color: colors.secondaryAccent,
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: const Row(

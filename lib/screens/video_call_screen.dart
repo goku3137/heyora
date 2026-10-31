@@ -7,6 +7,7 @@ import '../models/user_state.dart';
 import '../services/matchmaking_service.dart';
 import '../services/moderation_service.dart';
 import '../services/webrtc_service.dart';
+import '../theme/app_colors.dart';
 import '../widgets/gift_bottom_sheet.dart';
 import '../widgets/google_linking_sheet.dart';
 import '../widgets/report_dialog.dart';
@@ -296,7 +297,7 @@ class _VideoCallScreenState extends State<VideoCallScreen>
           // 1. Remote Stranger Video / WebRTC Remote Canvas
           Positioned.fill(
             child: Container(
-              color: const Color(0xFF0C0E1E),
+              color: AppColors.cinema.background,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -319,19 +320,17 @@ class _VideoCallScreenState extends State<VideoCallScreen>
                             height: 110,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
+                              color: AppColors.cinema.surface,
                               border: Border.all(
-                                color: Colors.cyanAccent.withValues(alpha: 0.4),
-                                width: 3,
-                              ),
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF8A2BE2), Color(0xFF00FFFF)],
+                                color: AppColors.cinema.divider,
+                                width: 2,
                               ),
                             ),
                             child: Center(
                               child: Text(
                                 _strangerName.isNotEmpty ? _strangerName[0] : 'S',
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                style: TextStyle(
+                                  color: AppColors.cinema.textPrimary,
                                   fontSize: 44,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -341,8 +340,8 @@ class _VideoCallScreenState extends State<VideoCallScreen>
                           const SizedBox(height: 16),
                           Text(
                             _strangerName,
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: AppColors.cinema.textPrimary,
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
                             ),
@@ -351,11 +350,11 @@ class _VideoCallScreenState extends State<VideoCallScreen>
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.location_on, color: Colors.cyanAccent, size: 16),
+                              Icon(Icons.location_on, color: AppColors.cinema.textSecondary, size: 16),
                               const SizedBox(width: 4),
                               Text(
                                 _strangerLocation,
-                                style: const TextStyle(color: Colors.white70, fontSize: 14),
+                                style: TextStyle(color: AppColors.cinema.textSecondary, fontSize: 14),
                               ),
                               const SizedBox(width: 10),
                               Container(
@@ -404,18 +403,18 @@ class _VideoCallScreenState extends State<VideoCallScreen>
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const SizedBox(
+                                  SizedBox(
                                     width: 14,
                                     height: 14,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      color: Colors.cyanAccent,
+                                      color: AppColors.cinema.primaryCTA,
                                     ),
                                   ),
                                   const SizedBox(width: 10),
                                   Text(
                                     _statusMessage,
-                                    style: const TextStyle(color: Colors.white70, fontSize: 13),
+                                    style: TextStyle(color: AppColors.cinema.textSecondary, fontSize: 13),
                                   ),
                                 ],
                               ),
@@ -435,17 +434,17 @@ class _VideoCallScreenState extends State<VideoCallScreen>
                             child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 18),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF161828).withValues(alpha: 0.95),
+                                color: AppColors.cinema.surface.withValues(alpha: 0.95),
                                 borderRadius: BorderRadius.circular(22),
-                                border: Border.all(color: Colors.cyanAccent.withValues(alpha: 0.6)),
+                                border: Border.all(color: AppColors.cinema.primaryCTA.withValues(alpha: 0.5)),
                               ),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Text(
+                                  Text(
                                     '🛡️ 3-Sec Safety Handshake',
                                     style: TextStyle(
-                                      color: Colors.cyanAccent,
+                                      color: AppColors.cinema.primaryCTA,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
                                     ),
@@ -491,12 +490,16 @@ class _VideoCallScreenState extends State<VideoCallScreen>
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFE91E63), Color(0xFF9C27B0)],
+                        gradient: LinearGradient(
+                          colors: [AppColors.cinema.primaryCTA, AppColors.cinema.secondaryAccent],
                         ),
                         borderRadius: BorderRadius.circular(20),
-                        boxShadow: const [
-                          BoxShadow(color: Colors.pinkAccent, blurRadius: 20, spreadRadius: 2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.cinema.primaryCTA.withValues(alpha: 0.35),
+                            blurRadius: 20,
+                            spreadRadius: 2,
+                          ),
                         ],
                       ),
                       child: Row(
@@ -690,9 +693,9 @@ class _VideoCallScreenState extends State<VideoCallScreen>
               width: 105,
               height: 150,
               decoration: BoxDecoration(
-                color: const Color(0xFF1E213D),
+                color: AppColors.cinema.surface,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.cyanAccent.withValues(alpha: 0.7), width: 1.5),
+                border: Border.all(color: AppColors.cinema.divider, width: 1.5),
                 boxShadow: const [
                   BoxShadow(color: Colors.black54, blurRadius: 10, spreadRadius: 2),
                 ],
@@ -754,11 +757,11 @@ class _VideoCallScreenState extends State<VideoCallScreen>
                   ),
                 ),
 
-                // 🛑 SKIP TO NEXT STRANGER (Central Big Button)
+                // 🛑 SKIP TO NEXT STRANGER (Central Big Button - Solar Coral)
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00F0FF),
-                    foregroundColor: Colors.black,
+                    backgroundColor: AppColors.cinema.primaryCTA,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                     elevation: 10,
@@ -774,7 +777,7 @@ class _VideoCallScreenState extends State<VideoCallScreen>
                 // 🎁 Send Gift Button
                 FloatingActionButton.small(
                   heroTag: 'gift_btn',
-                  backgroundColor: const Color(0xFFE91E63),
+                  backgroundColor: AppColors.cinema.secondaryAccent,
                   onPressed: () {
                     GiftBottomSheet.show(
                       context,

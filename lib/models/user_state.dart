@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/moderation_service.dart';
 import '../services/supabase_service.dart';
 import '../services/wallet_service.dart';
@@ -10,10 +11,49 @@ import 'gift.dart';
 const bool kEnableCashout = false;
 
 class UserState extends ChangeNotifier {
+  ThemeMode _themeMode = ThemeMode.system;
+
   UserState() {
     WalletService.instance.onWalletUpdated = () {
       notifyListeners();
     };
+    _loadThemeMode();
+  }
+
+  ThemeMode get themeMode => _themeMode;
+
+  Future<void> _loadThemeMode() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final modeStr = prefs.getString('heyora_theme_mode') ?? 'system';
+      switch (modeStr) {
+        case 'dark':
+          _themeMode = ThemeMode.dark;
+          break;
+        case 'light':
+          _themeMode = ThemeMode.light;
+          break;
+        default:
+          _themeMode = ThemeMode.system;
+          break;
+      }
+      notifyListeners();
+    } catch (_) {}
+  }
+
+  Future<void> setThemeMode(ThemeMode mode) async {
+    if (_themeMode == mode) return;
+    _themeMode = mode;
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final modeStr = mode == ThemeMode.dark
+          ? 'dark'
+          : mode == ThemeMode.light
+              ? 'light'
+              : 'system';
+      await prefs.setString('heyora_theme_mode', modeStr);
+    } catch (_) {}
   }
 
   int get coins => WalletService.instance.coins;
@@ -65,6 +105,12 @@ class UserState extends ChangeNotifier {
   }
 
   bool isBlocked(String userId) => ModerationService.instance.isBlocked(userId);
+  int get blockedCount => ModerationService.instance.blockedUserIds.length;
+
+  Future<void> unblockAll() async {
+    await ModerationService.instance.unblockAll();
+    notifyListeners();
+  }
 
   Future<bool> linkWithGoogle() async {
     final result = await SupabaseService.instance.linkWithGoogle();
@@ -74,6 +120,20 @@ class UserState extends ChangeNotifier {
 
   Future<void> unlinkGoogle() async {
     await SupabaseService.instance.unlinkGoogle();
+    notifyListeners();
+  }
+
+  /// Sign out from linked Google account and return to anonymous guest session
+  Future<void> logout() async {
+    await SupabaseService.instance.logout();
+    notifyListeners();
+  }
+
+  /// Permanently delete account and all associated local and cloud data
+  Future<void> deleteAccount() async {
+    await SupabaseService.instance.deleteAccountData();
+    await WalletService.instance.resetWallet();
+    await ModerationService.instance.resetData();
     notifyListeners();
   }
 }

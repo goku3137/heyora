@@ -139,4 +139,36 @@ class SupabaseService {
       await GoogleSignIn().signOut();
     } catch (_) {}
   }
+
+  /// Logout Google account and return to guest mode
+  Future<void> logout() async {
+    await unlinkGoogle();
+    if (_client != null) {
+      try {
+        await _client!.auth.signOut();
+        await _client!.auth.signInAnonymously();
+      } catch (_) {}
+    }
+  }
+
+  /// Completely wipes local user identity, linked account, and regenerates a clean guest ID
+  Future<void> deleteAccountData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('heyora_persistent_guest_id');
+    await prefs.remove('heyora_linked_email');
+    await prefs.remove('heyora_linked_name');
+    _linkedEmail = null;
+    _linkedName = null;
+    _cachedGuestId = const Uuid().v4();
+    await prefs.setString('heyora_persistent_guest_id', _cachedGuestId!);
+    try {
+      await GoogleSignIn().signOut();
+    } catch (_) {}
+    if (_client != null) {
+      try {
+        await _client!.auth.signOut();
+        await _client!.auth.signInAnonymously();
+      } catch (_) {}
+    }
+  }
 }

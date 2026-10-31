@@ -7,6 +7,7 @@ import 'services/iap_service.dart';
 import 'services/moderation_service.dart';
 import 'services/supabase_service.dart';
 import 'services/wallet_service.dart';
+import 'theme/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,9 +20,7 @@ Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light,
-      systemNavigationBarColor: Color(0xFF090A14),
-      systemNavigationBarIconBrightness: Brightness.light,
+      systemNavigationBarColor: Colors.transparent,
     ),
   );
 
@@ -47,20 +46,18 @@ class _HeyOraAppState extends State<HeyOraApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'HeyOra',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF090A14),
-        colorScheme: const ColorScheme.dark(
-          primary: Color(0xFF00F0FF),
-          secondary: Color(0xFFFF2A85),
-          surface: Color(0xFF14162B),
-        ),
-      ),
-      home: HomeScreen(userState: _userState),
+    return ListenableBuilder(
+      listenable: _userState,
+      builder: (context, _) {
+        return MaterialApp(
+          title: 'HeyOra',
+          debugShowCheckedModeBanner: false,
+          themeMode: _userState.themeMode,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          home: HomeScreen(userState: _userState),
+        );
+      },
     );
   }
 }

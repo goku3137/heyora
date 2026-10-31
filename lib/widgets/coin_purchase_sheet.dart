@@ -4,6 +4,7 @@ import '../config/app_config.dart';
 import '../models/user_state.dart';
 import '../services/iap_service.dart';
 import '../services/wallet_service.dart';
+import '../theme/app_colors.dart';
 import 'google_linking_sheet.dart';
 
 class CoinPurchaseSheet extends StatelessWidget {
@@ -103,13 +104,19 @@ class CoinPurchaseSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-      decoration: const BoxDecoration(
-        color: Color(0xFF14162B),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         boxShadow: [
-          BoxShadow(color: Colors.black87, blurRadius: 25, spreadRadius: 5),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: colors.isDark ? 0.6 : 0.15),
+            blurRadius: 25,
+            spreadRadius: 5,
+          ),
         ],
       ),
       child: SafeArea(
@@ -123,7 +130,7 @@ class CoinPurchaseSheet extends StatelessWidget {
               height: 4,
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                color: Colors.white24,
+                color: colors.divider,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -132,38 +139,38 @@ class CoinPurchaseSheet extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Column(
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Get HeyOra Coins 🪙',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: colors.textPrimary,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 2),
+                    const SizedBox(height: 2),
                     Text(
                       'Unlock Girls Only filter & send live gifts',
-                      style: TextStyle(color: Colors.white60, fontSize: 12),
+                      style: TextStyle(color: colors.textSecondary, fontSize: 12),
                     ),
                   ],
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1E2142),
+                    color: colors.surfaceCard,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.amberAccent.withValues(alpha: 0.4)),
+                    border: Border.all(color: colors.premiumGold.withValues(alpha: 0.4)),
                   ),
                   child: Row(
                     children: [
                       const Text('🪙 ', style: TextStyle(fontSize: 13)),
                       Text(
                         '${userState.coins}',
-                        style: const TextStyle(
-                          color: Colors.amberAccent,
+                        style: TextStyle(
+                          color: colors.premiumGold,
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
                         ),
@@ -196,12 +203,12 @@ class CoinPurchaseSheet extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E213D),
+                      color: colors.surfaceCard,
                       borderRadius: BorderRadius.circular(18),
                       border: Border.all(
                         color: badge != null
-                            ? const Color(0xFFFF2A85).withValues(alpha: 0.6)
-                            : Colors.white10,
+                            ? colors.primaryCTA.withValues(alpha: 0.8)
+                            : colors.divider,
                         width: badge != null ? 1.5 : 1,
                       ),
                     ),
@@ -217,8 +224,8 @@ class CoinPurchaseSheet extends StatelessWidget {
                                 const SizedBox(width: 8),
                                 Text(
                                   '${pack['coins']} Coins',
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                  style: TextStyle(
+                                    color: colors.textPrimary,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 15,
                                   ),
@@ -227,20 +234,20 @@ class CoinPurchaseSheet extends StatelessWidget {
                             ),
                             Text(
                               pack['label'] as String,
-                              style: const TextStyle(color: Colors.white60, fontSize: 11),
+                              style: TextStyle(color: colors.textSecondary, fontSize: 11),
                             ),
                             Container(
                               width: double.infinity,
                               padding: const EdgeInsets.symmetric(vertical: 6),
                               decoration: BoxDecoration(
-                                color: Colors.cyanAccent.withValues(alpha: 0.15),
+                                color: colors.primaryCTA.withValues(alpha: 0.12),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               alignment: Alignment.center,
                               child: Text(
                                 pack['price'] as String,
-                                style: const TextStyle(
-                                  color: Colors.cyanAccent,
+                                style: TextStyle(
+                                  color: colors.primaryCTA,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
                                 ),
@@ -255,7 +262,7 @@ class CoinPurchaseSheet extends StatelessWidget {
                             child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFFF2A85),
+                                color: colors.primaryCTA,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(

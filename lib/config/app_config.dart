@@ -2,7 +2,7 @@
 class AppConfig {
   // 1. Supabase Cloud Credentials
   // Replace these with your project's URL and Anon Key from the Supabase Dashboard.
-  static const String supabaseUrl = 'https://demo-heyora-project.supabase.co';
+  static const String supabaseUrl = 'https://bmdowrtsjblrmjscwplh.supabase.co';
   static const String supabaseAnonKey =
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.demo-placeholder-key-replace-with-real-key';
 
@@ -11,8 +11,8 @@ class AppConfig {
   static const String googleWebClientId = '';
 
   static bool get isSupabaseConfigured =>
-      supabaseUrl != 'https://demo-heyora-project.supabase.co' &&
-      !supabaseAnonKey.contains('demo-placeholder');
+      supabaseUrl != 'https://bmdowrtsjblrmjscwplh.supabase.co' &&
+      !supabaseAnonKey.contains('');
 
   // 2. WebRTC Multi-Provider STUN & Free TURN Infrastructure
   // 85% of calls connect for $0 through Google & Cloudflare STUN servers.

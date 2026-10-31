@@ -77,4 +77,20 @@ class ModerationService {
   }
 
   bool isBlocked(String userId) => _blockedUserIds.contains(userId);
+
+  /// Unblock all users
+  Future<void> unblockAll() async {
+    _blockedUserIds.clear();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('heyora_blocked_users');
+  }
+
+  /// Reset all moderation preferences on account deletion
+  Future<void> resetData() async {
+    _blockedUserIds.clear();
+    _hasAccepted18Plus = false;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('heyora_18plus_accepted');
+    await prefs.remove('heyora_blocked_users');
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/supabase_service.dart';
+import '../theme/app_colors.dart';
 
 class GoogleLinkingSheet extends StatefulWidget {
   final String title;
@@ -60,13 +61,19 @@ class _GoogleLinkingSheetState extends State<GoogleLinkingSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-      decoration: const BoxDecoration(
-        color: Color(0xFF14162B),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         boxShadow: [
-          BoxShadow(color: Colors.black87, blurRadius: 25, spreadRadius: 5),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: colors.isDark ? 0.6 : 0.15),
+            blurRadius: 25,
+            spreadRadius: 5,
+          ),
         ],
       ),
       child: SafeArea(
@@ -80,7 +87,7 @@ class _GoogleLinkingSheetState extends State<GoogleLinkingSheet> {
               height: 4,
               margin: const EdgeInsets.only(bottom: 20),
               decoration: BoxDecoration(
-                color: Colors.white24,
+                color: colors.divider,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -90,12 +97,12 @@ class _GoogleLinkingSheetState extends State<GoogleLinkingSheet> {
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: Colors.cyanAccent.withValues(alpha: 0.1),
+                color: colors.primaryCTA.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.cyanAccent.withValues(alpha: 0.3)),
+                border: Border.all(color: colors.primaryCTA.withValues(alpha: 0.3)),
               ),
-              child: const Center(
-                child: Icon(Icons.shield_rounded, color: Colors.cyanAccent, size: 30),
+              child: Center(
+                child: Icon(Icons.shield_rounded, color: colors.primaryCTA, size: 30),
               ),
             ),
             const SizedBox(height: 16),
@@ -104,8 +111,8 @@ class _GoogleLinkingSheetState extends State<GoogleLinkingSheet> {
             Text(
               widget.title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: colors.textPrimary,
                 fontSize: 19,
                 fontWeight: FontWeight.bold,
               ),
@@ -116,8 +123,8 @@ class _GoogleLinkingSheetState extends State<GoogleLinkingSheet> {
             Text(
               widget.description,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.white70,
+              style: TextStyle(
+                color: colors.textSecondary,
                 fontSize: 13,
                 height: 1.4,
               ),
@@ -130,10 +137,11 @@ class _GoogleLinkingSheetState extends State<GoogleLinkingSheet> {
               height: 50,
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
+                  backgroundColor: colors.isDark ? Colors.white : const Color(0xFFF1F3F7),
                   foregroundColor: Colors.black,
+                  elevation: colors.isDark ? 2 : 0,
+                  side: colors.isDark ? null : BorderSide(color: colors.divider),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  elevation: 2,
                 ),
                 onPressed: _isLoading ? null : _handleLinkWithGoogle,
                 icon: _isLoading
@@ -158,9 +166,9 @@ class _GoogleLinkingSheetState extends State<GoogleLinkingSheet> {
             // Not Now Button
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text(
+              child: Text(
                 'Not now',
-                style: TextStyle(color: Colors.white54, fontSize: 13),
+                style: TextStyle(color: colors.textSecondary, fontSize: 13),
               ),
             ),
             const SizedBox(height: 6),
